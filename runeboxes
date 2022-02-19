@@ -146,7 +146,7 @@ display_empty_frame_line() {
   printf "%s" "$1"
 }
 
-function is_pipe() {
+is_pipe() {
   if [ -p /dev/stdin ]; then
     return 0
   elif [ -p /dev/stdout ]; then
@@ -161,11 +161,19 @@ is_exists() {
   return $?
 }
 
+exitr() {
+  echo "exit" 1>&2
+  exit 1
+}
+
 # locale
 export LC_ALL=C
 
 # IFS
 IFS=""
+
+# trap
+trap exitr QUIT SIGINT
 
 # vars
 box_padding=1
