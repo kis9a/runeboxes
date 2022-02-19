@@ -45,24 +45,25 @@ show_help() {
   cat <<'EOF'
 
 USAGE:
-  strbox [options] <resource|data>
+  runeboxes [options] <box_char>
 
 OPTIONS:
   -h: help
   -p: padding
 
 EXAMPLE:
-  echo string | strbox @
-  echo string | strbox -p 3 \$
-  cowsay -W 60 padding と runewidth に対応した。漢字、emoji:$(echo -e "\U1F4A9") | ./strbox -p 4 @
+  echo apple | runeboxes @
+  echo banana | runeboxes -p 3 \$
+  echo -e "\U1F4A9" | runeboxes 金
+  fortune | cowsay -W 60 | runeboxes -p 2 #
 EOF
   exit 0
 }
 
-run_strbox() {
+run_runeboxes() {
   local in
   local max
-  local sins
+  local singles
 
   in="$(cat -)"
 
@@ -73,14 +74,19 @@ run_strbox() {
     lines+=("$l")
   done <<<"$in"
 
-  sins="$((max + 2 + $((box_padding * 2))))"
+  if [[ $((max % 2)) -ne 0 ]]; then
+    max=$((max + 1))
+  fi
+
+  singles="$((max + $((box_char_runewidth * 2)) + $((box_padding * 2))))"
+  doubles="$((singles / box_char_runewidth))"
 
   # top border
-  display_border_line "$1" "$sins"
+  display_border_line "$1" "$doubles"
   display_new_line
 
   # top empty frame
-  display_empty_frame_line "$1" "$sins"
+  display_empty_frame_line "$1" "$singles"
   display_new_line
 
   # input lines
@@ -98,11 +104,11 @@ run_strbox() {
   done
 
   # bottom empty frame
-  display_empty_frame_line "$1" "$sins"
+  display_empty_frame_line "$1" "$singles"
   display_new_line
 
   # bottom border
-  display_border_line "$1" "$sins"
+  display_border_line "$1" "$doubles"
   display_new_line
 }
 
@@ -136,7 +142,7 @@ display_new_line() {
 
 display_empty_frame_line() {
   printf "%s" "$1"
-  display_string_n_times ' ' "$(($2 - 2))"
+  display_string_n_times ' ' "$(($2 - $((box_char_runewidth * 2))))"
   printf "%s" "$1"
 }
 
@@ -163,7 +169,8 @@ IFS=""
 
 # vars
 box_padding=1
-box_char=""
+box_char="#"
+box_char_runewidth=1
 
 if [[ -z "$1" ]]; then
   box_char="#"
@@ -206,12 +213,14 @@ while getopts ":hp" o; do
   esac
 done
 
+box_char_runewidth="$(runewidth "$box_char")"
+
 # run
 if [[ -z "$box_char" ]]; then
   err "Argument is required"
   show_help
-elif [[ "${#box_char}" -gt 1 ]]; then
-  err "Over string width, str width expected less than 1 int"
+elif [[ "$box_char_runewidth" -gt 2 ]]; then
+  err "String is over 2 runewidth"
   show_help
 elif ! is_pipe; then
   err "Pipe input is requird"
@@ -220,5 +229,6 @@ elif ! is_exists "runewidth"; then
   err "Command not found: runewidth"
   show_hwlp
 else
-  run_strbox "$box_char"
+  stdout="$(run_runeboxes "$box_char")"
+  echo "$stdout"
 fi
