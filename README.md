@@ -9,7 +9,7 @@ Display the piped string in the character box.
 ### Required
 
 runewidth command is required.  
-runewidth "string" is return fixed width of the character or "string".
+runewidth "string" is return fixed width of the character "string".
 
 I use [GitHub - mattn/go-runewidth: wcwidth for golang](https://github.com/mattn/go-runewidth) function as command line tool.  
 See installation at <https://github.com/kis9a/go-runewidth#fork>
@@ -26,7 +26,7 @@ chmod +x "$install_path"
 
 ```
 USAGE:
-  runeboxes [options] <resource|data>
+  runeboxes [options] <box_char>
 
 OPTIONS:
   -h: help
