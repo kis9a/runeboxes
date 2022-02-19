@@ -1,0 +1,224 @@
+#!/bin/bash
+
+# --- template --- {{{
+readonly cf="\\033[0m"
+readonly red="\\033[0;31m"
+readonly green="\\033[0;32m"
+readonly yellow="\\033[0;33m"
+
+err() {
+  local _date
+  _date=$(showdate)
+  echo -e "[$_date][${red}ERROR${cf}]: $1" 1>&2
+}
+
+warn() {
+  local _date
+  _date=$(showdate)
+  echo -e "[$_date][${yellow}WARNING${cf}]: $1"
+}
+
+info() {
+  local _date
+  _date=$(showdate)
+  echo -e "[$_date][INFO]: $1 "
+}
+
+succ() {
+  local _date
+  _date=$(showdate)
+  echo -e "[$_date][${green}SUCCESS${cf}]: $1"
+}
+
+showdate() {
+  local _date
+  _date=$(date +%d-%H.%M)
+  echo "$_date"
+}
+
+cleanup() {
+  info "cleanup.."
+}
+#}}}
+
+show_help() {
+  cat <<'EOF'
+
+USAGE:
+  strbox [options] <resource|data>
+
+OPTIONS:
+  -h: help
+  -p: padding
+
+EXAMPLE:
+  echo string | strbox @
+  echo string | strbox -p 3 \$
+  cowsay -W 60 padding と runewidth に対応した。漢字、emoji:$(echo -e "\U1F4A9") | ./strbox -p 4 @
+EOF
+  exit 0
+}
+
+run_strbox() {
+  local in
+  local max
+  local sins
+
+  in="$(cat -)"
+
+  while read -r l; do
+    if [[ ${#l} -gt $max ]]; then
+      max=$(runewidth "$l")
+    fi
+    lines+=("$l")
+  done <<<"$in"
+
+  sins="$((max + 2 + $((box_padding * 2))))"
+
+  # top border
+  display_border_line "$1" "$sins"
+  display_new_line
+
+  # top empty frame
+  display_empty_frame_line "$1" "$sins"
+  display_new_line
+
+  # input lines
+  for l in "${lines[@]}"; do
+
+    display_front_padding_block "$1"
+
+    printf "%s" "$l"
+
+    display_string_n_times ' ' $((max - $(runewidth "$l")))
+
+    display_back_padding_block "$1"
+
+    display_new_line
+  done
+
+  # bottom empty frame
+  display_empty_frame_line "$1" "$sins"
+  display_new_line
+
+  # bottom border
+  display_border_line "$1" "$sins"
+  display_new_line
+}
+
+display_string_n_times() {
+  if [[ 0 -ne $2 ]]; then
+    seq -s "$1" "$2" | tr -d '[:digit:]'
+  fi
+}
+
+display_empty_block() {
+  printf ' '
+}
+
+display_front_padding_block() {
+  printf "%s" "$1"
+  display_string_n_times ' ' "$box_padding"
+}
+
+display_back_padding_block() {
+  display_string_n_times ' ' "$box_padding"
+  printf "%s" "$1"
+}
+
+display_border_line() {
+  display_string_n_times "$1" "$2"
+}
+
+display_new_line() {
+  printf "\n"
+}
+
+display_empty_frame_line() {
+  printf "%s" "$1"
+  display_string_n_times ' ' "$(($2 - 2))"
+  printf "%s" "$1"
+}
+
+function is_pipe() {
+  if [ -p /dev/stdin ]; then
+    return 0
+  elif [ -p /dev/stdout ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+is_exists() {
+  which "$1" >/dev/null 2>&1
+  return $?
+}
+
+# locale
+export LC_ALL=C
+
+# IFS
+IFS=""
+
+# vars
+box_padding=1
+box_char=""
+
+if [[ -z "$1" ]]; then
+  box_char="#"
+else
+  box_char="$1"
+fi
+
+# flag option cases
+while getopts ":hp" o; do
+  case "${o}" in
+  h)
+    show_help
+    ;;
+  p)
+    if [[ "$#" -eq 2 || "$#" -eq 3 && "$1" == "-p" ]]; then
+      if [[ "$#" -eq 2 ]]; then
+        box_char="#"
+      else
+        if [[ -z $3 ]]; then
+          box_char="#"
+        else
+          box_char="$3"
+        fi
+      fi
+      if [[ "$2" =~ ^[0-9]+$ ]]; then
+        box_padding="$2"
+      else
+        err "Invalid -p option usage"
+        show_help
+      fi
+    else
+      err "Invalid -p option usage"
+      show_help
+    fi
+    ;;
+  *)
+    err "Invalid option"
+    show_help
+    ;;
+  esac
+done
+
+# run
+if [[ -z "$box_char" ]]; then
+  err "Argument is required"
+  show_help
+elif [[ "${#box_char}" -gt 1 ]]; then
+  err "Over string width, str width expected less than 1 int"
+  show_help
+elif ! is_pipe; then
+  err "Pipe input is requird"
+  show_help
+elif ! is_exists "runewidth"; then
+  err "Command not found: runewidth"
+  show_hwlp
+else
+  run_strbox "$box_char"
+fi
