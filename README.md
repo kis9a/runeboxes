@@ -2,6 +2,10 @@
 
 Display the piped string in the character box.
 
+### Image
+
+![runeboxes command image](./image.png)
+
 ### Required
 
 runewidth command is required.  
