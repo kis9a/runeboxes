@@ -68,7 +68,7 @@ run_runeboxes() {
   in="$(cat -)"
 
   while read -r l; do
-    if [[ ${#l} -gt $max ]]; then
+    if [[ $(runewidth "$l") -gt $max ]]; then
       max=$(runewidth "$l")
     fi
     lines+=("$l")
@@ -86,8 +86,10 @@ run_runeboxes() {
   display_new_line
 
   # top empty frame
-  display_empty_frame_line "$1" "$singles"
-  display_new_line
+  for ((i = 0; i < "$box_padding"; i++)); do
+    display_empty_frame_line "$1" "$singles"
+    display_new_line
+  done
 
   # input lines
   for l in "${lines[@]}"; do
@@ -104,8 +106,10 @@ run_runeboxes() {
   done
 
   # bottom empty frame
-  display_empty_frame_line "$1" "$singles"
-  display_new_line
+  for ((i = 0; i < "$box_padding"; i++)); do
+    display_empty_frame_line "$1" "$singles"
+    display_new_line
+  done
 
   # bottom border
   display_border_line "$1" "$doubles"
