@@ -68,6 +68,9 @@ run_runeboxes() {
   in="$(cat -)"
 
   while read -r l; do
+    # tab to space
+    l="$(tab_to_space "$l")"
+
     if [[ $(runewidth "$l") -gt $max ]]; then
       max=$(runewidth "$l")
     fi
@@ -148,6 +151,11 @@ display_empty_frame_line() {
   printf "%s" "$1"
   display_string_n_times ' ' "$(($2 - $((box_char_runewidth * 2))))"
   printf "%s" "$1"
+}
+
+tab_to_space() {
+  # shellcheck disable=SC2001
+  echo "$1" | sed -e 's/\t/    /g'
 }
 
 is_pipe() {
