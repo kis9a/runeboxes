@@ -1,6 +1,12 @@
 # runeboxes
 
-Display the piped string in the character box.
+```
+##################################################
+#                                                #
+# Display the piped string in the character box. #
+#                                                #
+##################################################
+```
 
 ### Image
 
@@ -37,6 +43,12 @@ EXAMPLE:
   echo banana | runeboxes -p 3 \$
   echo -e "\U1F4A9" | runeboxes 金
   fortune | cowsay -W 60 | runeboxes -p 2 #
+```
+
+vim
+
+```
+:'<,'>!cat - | runeboxes
 ```
 
 ### Inspired
