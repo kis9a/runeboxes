@@ -77,8 +77,11 @@ run_runeboxes() {
     lines+=("$l")
   done <<<"$in"
 
-  if [[ $((max % 2)) -ne 0 ]]; then
-    max=$((max + 1))
+  # make max to even if box_char_runewidth is 2
+  if [[ "$box_char_runewidth" -eq 2 ]]; then
+    if [[ $((max % 2)) -ne 0 ]]; then
+      max=$((max + 1))
+    fi
   fi
 
   singles="$((max + $((box_char_runewidth * 2)) + $((box_padding * 2))))"
