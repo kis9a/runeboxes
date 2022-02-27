@@ -123,6 +123,7 @@ run_runeboxes() {
 }
 
 display_string_n_times() {
+  local i
   if [[ 0 -ne $2 ]]; then
     for ((i = 1; i <= $2; i++)); do
       printf "%s" "$1"
