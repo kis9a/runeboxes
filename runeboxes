@@ -64,6 +64,10 @@ run_runeboxes() {
   local in
   local max
   local singles
+  local frame_empties
+  local lens
+  local l
+  local i
 
   in="$(cat -)"
 
@@ -85,15 +89,16 @@ run_runeboxes() {
   fi
 
   singles="$((max + $((box_char_runewidth * 2)) + $((box_padding * 2))))"
-  doubles="$((singles / box_char_runewidth))"
+  frame_empties="$((singles - $((box_char_runewidth * 2))))"
+  lens="$((singles / box_char_runewidth))"
 
   # top border
-  display_border_line "$1" "$doubles"
+  display_border_line "$1" "$lens"
   display_new_line
 
   # top empty frame
   for ((i = 0; i < "$box_padding"; i++)); do
-    display_empty_frame_line "$1" "$singles"
+    display_empty_frame_line "$1" "$frame_empties"
     display_new_line
   done
 
@@ -113,12 +118,12 @@ run_runeboxes() {
 
   # bottom empty frame
   for ((i = 0; i < "$box_padding"; i++)); do
-    display_empty_frame_line "$1" "$singles"
+    display_empty_frame_line "$1" "$frame_empties"
     display_new_line
   done
 
   # bottom border
-  display_border_line "$1" "$doubles"
+  display_border_line "$1" "$lens"
   display_new_line
 }
 
@@ -155,7 +160,7 @@ display_new_line() {
 
 display_empty_frame_line() {
   printf "%s" "$1"
-  display_string_n_times ' ' "$(($2 - $((box_char_runewidth * 2))))"
+  display_string_n_times ' ' "$2"
   printf "%s" "$1"
 }
 
