@@ -69,12 +69,14 @@ run_runeboxes() {
   local l
   local i
 
+  # read stdin
   in="$(cat -)"
 
-  while read -r l; do
-    # tab to space
-    l="$(tab_to_space "$l")"
+  # tab_to_space
+  in="$(tab_to_space "$in")"
 
+  # set max and read liens
+  while read -r l; do
     if [[ $(runewidth "$l") -gt $max ]]; then
       max=$(runewidth "$l")
     fi
@@ -260,6 +262,6 @@ elif ! is_exists "runewidth"; then
   err "Command not found: runewidth"
   show_hwlp
 else
-  stdout="$(run_runeboxes "$box_char")"
-  echo "$stdout"
+  out="$(run_runeboxes "$box_char")"
+  echo "$out"
 fi
