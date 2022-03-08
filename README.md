@@ -10,7 +10,7 @@
 
 ### Image
 
-![runeboxes command image](./image.png)
+![runeboxes command image](./runeboxes.png)
 
 ### Required
 
