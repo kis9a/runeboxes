@@ -36,6 +36,7 @@ USAGE:
 
 OPTIONS:
   -h: help
+  -t: test: runeboxes_test
   -p: padding size
   -x: horizontal padding size
   -y: vertical padding size
@@ -62,3 +63,10 @@ vim
 
 linter: [GitHub - koalaman/shellcheck: ShellCheck, a static analysis tool for shell scripts](https://github.com/koalaman/shellcheck)  
 formatter: [GitHub - mvdan/sh: A shell parser, formatter, and interpreter with bash support; includes shfmt](https://github.com/mvdan/sh)
+
+### Testing
+
+```bash
+git clone https://github.com/kis9a/runeboxes
+cd runeboxes ./runeboxes -t
+```
