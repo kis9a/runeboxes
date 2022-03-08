@@ -36,13 +36,16 @@ USAGE:
 
 OPTIONS:
   -h: help
-  -p: padding
+  -p: padding size
+  -x: horizontal padding size
+  -y: vertical padding size
 
 EXAMPLE:
   echo apple | runeboxes @
   echo banana | runeboxes -p 3 \$
-  echo -e "\U1F4A9" | runeboxes 金
-  fortune | cowsay -W 60 | runeboxes -p 2 #
+  echo -e "\U1F4A9" | runeboxes -x 8 -y 2 金
+  fortune | cowsay -W 60 | runeboxes -x 4 $(echo -e "\U1F4A9")
+EOF
 ```
 
 vim
