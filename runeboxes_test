@@ -47,11 +47,11 @@ testing_run() {
 
   # test run_runeboxes
   ## first
-  box_padding_x=2
-  box_padding_y=1
-  box_char="#"
-  box_char_runewidth="$(runewidth "$box_char")"
-  test_run_runeboxes "$(echo "test_run_runeboxes" | run_runeboxes "$box_char")" "$(
+  BOX_PADDING_X=2
+  BOX_PADDING_Y=1
+  BOX_CHAR="#"
+  BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
+  test_run_runeboxes "$(echo "test_run_runeboxes" | run_runeboxes "$BOX_CHAR")" "$(
     cat <<EOF
 ########################
 #                      #
@@ -62,11 +62,11 @@ EOF
   )"
 
   ## multiple line input
-  box_padding_x=6
-  box_padding_y=2
-  box_char="@"
-  box_char_runewidth="$(runewidth "$box_char")"
-  test_run_runeboxes "$(echo -e "test_run_runeboxes\nmultiple line input" | run_runeboxes "$box_char")" "$(
+  BOX_PADDING_X=6
+  BOX_PADDING_Y=2
+  BOX_CHAR="@"
+  BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
+  test_run_runeboxes "$(echo -e "test_run_runeboxes\nmultiple line input" | run_runeboxes "$BOX_CHAR")" "$(
     cat <<EOF
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @                               @
@@ -79,12 +79,12 @@ EOF
 EOF
   )"
 
-  ## box_char fullwidth
-  box_padding_x=1
-  box_padding_y=1
-  box_char="全"
-  box_char_runewidth="$(runewidth "$box_char")"
-  test_run_runeboxes "$(echo -e "test_run_runeboxes fullwidth box char" | run_runeboxes "$box_char")" "$(
+  ## BOX_CHAR fullwidth
+  BOX_PADDING_X=1
+  BOX_PADDING_Y=1
+  BOX_CHAR="全"
+  BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
+  test_run_runeboxes "$(echo -e "test_run_runeboxes fullwidth box char" | run_runeboxes "$BOX_CHAR")" "$(
     cat <<EOF
 全全全全全全全全全全全全全全全全全全全全全全
 全                                        全
@@ -95,12 +95,12 @@ EOF
   )"
 
   ## mixed string width
-  ## box_char fullwidth
-  box_padding_x=1
-  box_padding_y=1
-  box_char="💩"
-  box_char_runewidth="$(runewidth "$box_char")"
-  test_run_runeboxes "$(echo -e "test_run_runeboxes\nmixed width \n🍎🍎" | run_runeboxes "$box_char")" "$(
+  ## BOX_CHAR fullwidth
+  BOX_PADDING_X=1
+  BOX_PADDING_Y=1
+  BOX_CHAR="💩"
+  BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
+  test_run_runeboxes "$(echo -e "test_run_runeboxes\nmixed width \n🍎🍎" | run_runeboxes "$BOX_CHAR")" "$(
     cat <<EOF
 💩💩💩💩💩💩💩💩💩💩💩💩
 💩                    💩
@@ -113,11 +113,11 @@ EOF
   )"
 
   ## tab input
-  box_padding_x=1
-  box_padding_y=1
-  box_char="za"
-  box_char_runewidth="$(runewidth "$box_char")"
-  test_run_runeboxes "$(echo -e "test_run_runeboxes\ntab \tinput \n🍎\t🍎" | run_runeboxes "$box_char")" "$(
+  BOX_PADDING_X=1
+  BOX_PADDING_Y=1
+  BOX_CHAR="za"
+  BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
+  test_run_runeboxes "$(echo -e "test_run_runeboxes\ntab \tinput \n🍎\t🍎" | run_runeboxes "$BOX_CHAR")" "$(
     cat <<EOF
 zazazazazazazazazazazaza
 za                    za
@@ -130,11 +130,11 @@ EOF
   )"
 
   ## zalgo
-  box_padding_x=1
-  box_padding_y=1
-  box_char="66"
-  box_char_runewidth="$(runewidth "$box_char")"
-  test_run_runeboxes "$(echo -e "z͙͑̈͏͙ă̺ͫl̜͕̈́̓͜g̳o̳ͫ̎͆,̞ͮ͂̂͞ ̎͢heͦ ̞̺͖̓͆ĉ̗̿̉ó̇́̈m͉̗̏ͯ̊e̩̿ͯͩs̰͑" | run_runeboxes "$box_char")" "$(
+  BOX_PADDING_X=1
+  BOX_PADDING_Y=1
+  BOX_CHAR="66"
+  BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
+  test_run_runeboxes "$(echo -e "z͙͑̈͏͙ă̺ͫl̜͕̈́̓͜g̳o̳ͫ̎͆,̞ͮ͂̂͞ ̎͢heͦ ̞̺͖̓͆ĉ̗̿̉ó̇́̈m͉̗̏ͯ̊e̩̿ͯͩs̰͑" | run_runeboxes "$BOX_CHAR")" "$(
     cat <<EOF
 6666666666666666666666
 66                  66
