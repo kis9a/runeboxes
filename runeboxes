@@ -74,8 +74,8 @@ run_runeboxes() {
   # read stdin
   in="$(cat -)"
 
-  # tab_to_space
-  in="$(tab_to_space "$in")"
+  # replace exception string
+  in="$(replace_exception_string "$in")"
 
   # set max and read liens
   while read -r l; do
@@ -140,6 +140,18 @@ repeat_string() {
   fi
 }
 
+replace_exception_string() {
+  # shellcheck disable=SC2001
+  printf "%s" "$1" | sed -e 's/0x0B/    /g' | # Vertical TAB
+    sed -e 's/\t/    /g' |                    # TAB
+    sed -e 's/\x08/  /g' |                    # backspace
+    sed -e 's/\x09/  /g' |                    # Horizon TAB
+    sed -e 's/\r/  /g' |                      # cr
+    sed -e 's/\x0c/  /g' |                    # form feed
+    sed -e 's/\0x7f/  /g' |                   # delete
+    sed -e 's/\x1b/  /g'                      # escape
+}
+
 empty_block() {
   printf ' '
 }
@@ -166,11 +178,6 @@ empty_frame_line() {
   printf "%s" "$1"
   repeat_string ' ' "$2"
   printf "%s" "$1"
-}
-
-tab_to_space() {
-  # shellcheck disable=SC2001
-  echo "$1" | sed -e 's/\t/    /g'
 }
 
 is_pipe() {
@@ -303,7 +310,11 @@ while getopts ":htpxy" o; do
         if [[ -z "$4" || -n "$6" ]]; then
           err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
         else
-          BOX_PADDING_Y="$4"
+          if is_number "$4"; then
+            BOX_PADDING_Y="$4"
+          else
+            err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
+          fi
           if [[ -n "$5" ]]; then
             BOX_CHAR="$5"
           else
@@ -336,7 +347,11 @@ while getopts ":htpxy" o; do
         if [[ -z "$4" || -n "$6" ]]; then
           err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
         else
-          BOX_PADDING_X="$4"
+          if is_number "$4"; then
+            BOX_PADDING_X="$4"
+          else
+            err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
+          fi
           if [[ -n "$5" ]]; then
             BOX_CHAR="$5"
           else
