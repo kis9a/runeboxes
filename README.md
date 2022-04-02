@@ -1,12 +1,6 @@
 # runeboxes
 
-```
-##################################################
-#                                                #
-# Display the piped string in the character box. #
-#                                                #
-##################################################
-```
+Display the piped string in the character box. #
 
 ### Image
 
@@ -38,12 +32,16 @@ OPTIONS:
   -h: help
   -t: test: runeboxes_test
   -p: padding size
-  -x: horizontal padding size
-  -y: vertical padding size
+  -m, --margin: margin size
+  -mx, --margin-x: horizontal margin size
+  -my, --margin-y: vertical margin size
+  -p, --padding: padding size
+  -px, --padding-x: horizontal padding size
+  -py, --padding-y: vertical padding size
 
 EXAMPLE:
   echo apple | runeboxes @
-  echo banana | runeboxes -p 3 \$
+  echo bananaあ | runeboxes -p 3 \$
   echo -e "\U1F4A9" | runeboxes -x 8 -y 2 金
   fortune | cowsay -W 60 | runeboxes -x 4 $(echo -e "\U1F4A9")
 EOF

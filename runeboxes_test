@@ -41,14 +41,14 @@ test_suc() {
 
 # test
 testing_run() {
-  # test repeat string
-  test_repeat_string "A" 8 "AAAAAAAA"
-  test_repeat_string "漢" 6 "漢漢漢漢漢漢"
+  # test repeat char
+  test_repeat_char "A" 8 "AAAAAAAA"
+  test_repeat_char "漢" 6 "漢漢漢漢漢漢"
 
   # test run_runeboxes
   ## first
-  BOX_PADDING_X=2
-  BOX_PADDING_Y=1
+  PADDING_X=2
+  PADDING_Y=1
   BOX_CHAR="#"
   BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
   test_run_runeboxes "$(echo "test_run_runeboxes" | run_runeboxes "$BOX_CHAR")" "$(
@@ -62,8 +62,8 @@ EOF
   )"
 
   ## multiple line input
-  BOX_PADDING_X=6
-  BOX_PADDING_Y=2
+  PADDING_X=6
+  PADDING_Y=2
   BOX_CHAR="@"
   BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
   test_run_runeboxes "$(echo -e "test_run_runeboxes\nmultiple line input" | run_runeboxes "$BOX_CHAR")" "$(
@@ -80,8 +80,8 @@ EOF
   )"
 
   ## BOX_CHAR fullwidth
-  BOX_PADDING_X=1
-  BOX_PADDING_Y=1
+  PADDING_X=1
+  PADDING_Y=1
   BOX_CHAR="全"
   BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
   test_run_runeboxes "$(echo -e "test_run_runeboxes fullwidth box char" | run_runeboxes "$BOX_CHAR")" "$(
@@ -96,8 +96,8 @@ EOF
 
   ## mixed string width
   ## BOX_CHAR fullwidth
-  BOX_PADDING_X=1
-  BOX_PADDING_Y=1
+  PADDING_X=1
+  PADDING_Y=1
   BOX_CHAR="💩"
   BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
   test_run_runeboxes "$(echo -e "test_run_runeboxes\nmixed width \n🍎🍎" | run_runeboxes "$BOX_CHAR")" "$(
@@ -113,8 +113,8 @@ EOF
   )"
 
   ## tab input
-  BOX_PADDING_X=1
-  BOX_PADDING_Y=1
+  PADDING_X=1
+  PADDING_Y=1
   BOX_CHAR="za"
   BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
   test_run_runeboxes "$(echo -e "test_run_runeboxes\ntab \tinput \n🍎\t🍎" | run_runeboxes "$BOX_CHAR")" "$(
@@ -130,8 +130,8 @@ EOF
   )"
 
   ## zalgo
-  BOX_PADDING_X=1
-  BOX_PADDING_Y=1
+  PADDING_X=1
+  PADDING_Y=1
   BOX_CHAR="66"
   BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
   test_run_runeboxes "$(echo -e "z͙͑̈͏͙ă̺ͫl̜͕̈́̓͜g̳o̳ͫ̎͆,̞ͮ͂̂͞ ̎͢heͦ ̞̺͖̓͆ĉ̗̿̉ó̇́̈m͉̗̏ͯ̊e̩̿ͯͩs̰͑" | run_runeboxes "$BOX_CHAR")" "$(
@@ -145,11 +145,11 @@ EOF
   )"
 }
 
-test_repeat_string() {
-  if assert_equal "$(repeat_string "$1" "$2")" "$3"; then
-    test_suc "test_repeat_string: $1"
+test_repeat_char() {
+  if assert_equal "$(repeat_char "$1" "$2")" "$3"; then
+    test_suc "test_repeat_char: $1"
   else
-    test_err "test_repeat_string: failed $1"
+    test_err "test_repeat_char: failed $1"
   fi
 }
 

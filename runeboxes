@@ -51,12 +51,16 @@ OPTIONS:
   -h: help
   -t: test: runeboxes_test
   -p: padding size
-  -x: horizontal padding size
-  -y: vertical padding size
+  -m, --margin: margin size
+  -mx, --margin-x: horizontal margin size
+  -my, --margin-y: vertical margin size
+  -p, --padding: padding size
+  -px, --padding-x: horizontal padding size
+  -py, --padding-y: vertical padding size
 
 EXAMPLE:
   echo apple | runeboxes @
-  echo banana | runeboxes -p 3 \$
+  echo bananaあ | runeboxes -p 3 \$
   echo -e "\U1F4A9" | runeboxes -x 8 -y 2 金
   fortune | cowsay -W 60 | runeboxes -x 4 $(echo -e "\U1F4A9")
 EOF
@@ -92,7 +96,7 @@ run_runeboxes() {
     fi
   fi
 
-  singles="$((max + $((BOX_CHAR_RUNEWIDTH * 2)) + $((BOX_PADDING_X * 2))))"
+  singles="$((max + $((BOX_CHAR_RUNEWIDTH * 2)) + $((PADDING_X * 2))))"
   frame_empties="$((singles - $((BOX_CHAR_RUNEWIDTH * 2))))"
   lens="$((singles / BOX_CHAR_RUNEWIDTH))"
 
@@ -101,7 +105,7 @@ run_runeboxes() {
   new_line
 
   # top empty frame
-  for ((i = 0; i < "$BOX_PADDING_Y"; i++)); do
+  for ((i = 0; i < "$PADDING_Y"; i++)); do
     empty_frame_line "$1" "$frame_empties"
     new_line
   done
@@ -113,7 +117,7 @@ run_runeboxes() {
 
     printf "%s" "$l"
 
-    repeat_string ' ' $((max - $(runewidth "$l")))
+    repeat_char "$EMPTY_CHAR" $((max - $(runewidth "$l")))
 
     back_padding_block "$1"
 
@@ -121,7 +125,7 @@ run_runeboxes() {
   done
 
   # bottom empty frame
-  for ((i = 0; i < "$BOX_PADDING_Y"; i++)); do
+  for ((i = 0; i < "$PADDING_Y"; i++)); do
     empty_frame_line "$1" "$frame_empties"
     new_line
   done
@@ -131,7 +135,7 @@ run_runeboxes() {
   new_line
 }
 
-repeat_string() {
+repeat_char() {
   local i
   if [[ 0 -ne $2 ]]; then
     for ((i = 1; i <= $2; i++)); do
@@ -153,21 +157,21 @@ replace_exception_string() {
 }
 
 empty_block() {
-  printf ' '
+  printf "%s" "$EMPTY_CHAR"
 }
 
 front_padding_block() {
   printf "%s" "$1"
-  repeat_string ' ' "$BOX_PADDING_X"
+  repeat_char "$PADDING_CHAR" "$PADDING_X"
 }
 
 back_padding_block() {
-  repeat_string ' ' "$BOX_PADDING_X"
+  repeat_char "$PADDING_CHAR" "$PADDING_X"
   printf "%s" "$1"
 }
 
 border_line() {
-  repeat_string "$1" "$2"
+  repeat_char "$1" "$2"
 }
 
 new_line() {
@@ -176,8 +180,25 @@ new_line() {
 
 empty_frame_line() {
   printf "%s" "$1"
-  repeat_string ' ' "$2"
+  repeat_char ' ' "$2"
   printf "%s" "$1"
+}
+
+wrap_margin() {
+  for ((i = 0; i < "$MARGIN_Y"; i++)); do
+    new_line
+  done
+
+  while read -r l; do
+    repeat_char "$MARGIN_CHAR" "$MARGIN_X"
+    printf "%s" "$l"
+    repeat_char "$MARGIN_CHAR" "$MARGIN_X"
+    new_line
+  done <<<"$1"
+
+  for ((i = 0; i < "$MARGIN_Y"; i++)); do
+    new_line
+  done
 }
 
 is_pipe() {
@@ -234,10 +255,15 @@ IFS=""
 trap exit_quit QUIT SIGINT
 
 # vars
-BOX_PADDING_X=2
-BOX_PADDING_Y=1
 BOX_CHAR="#"
 BOX_CHAR_RUNEWIDTH=1
+PADDING_X=2
+PADDING_Y=1
+PADDING_CHAR=" "
+MARGIN_X=0
+MARGIN_Y=0
+MARGIN_CHAR=" "
+EMPTY_CHAR=" "
 TEST_FILE="./runeboxes_test"
 
 ## error code
@@ -248,132 +274,112 @@ ERR_CODE_INVALID_INPUT=6
 ERR_CODE_NOT_FOUND_RUNEWIDTH=7
 ERR_CODE_NOT_FOUND_TESTFILE=8
 
-if [[ -z "$1" ]]; then
-  BOX_CHAR="#"
-else
-  BOX_CHAR="$1"
-fi
-
 # flag option cases
-while getopts ":htpxy" o; do
-  case "${o}" in
-  h)
+while [[ $# -gt 0 ]]; do
+  case $1 in
+  -h | --help)
     show_help
     exit_health ""
     ;;
-  t)
+  -t | --test)
     if [ -f "$TEST_FILE" ]; then
       info "start testing"
       # shellcheck disable=SC1090
       . "$TEST_FILE"
       info "end testing"
     else
-      err_exit "$TEST_FILE is not found" "$ERR_CODE_NOT_FOUND_TESTFILE"
+      err_exit "$TEST_FILE file is not found" "$ERR_CODE_NOT_FOUND_TESTFILE"
     fi
     exit_health ""
+    shift
+    shift
     ;;
-  p)
-    if [[ "$#" -eq 2 || "$#" -eq 3 && "$1" == "-p" ]]; then
-      if [[ "$#" -eq 2 ]]; then
-        BOX_CHAR="#"
-      else
-        if [[ -z $3 ]]; then
-          BOX_CHAR="#"
-        else
-          BOX_CHAR="$3"
-        fi
-      fi
-      if is_number "$2"; then
-        BOX_PADDING_X="$2"
-        BOX_PADDING_Y="$2"
-      else
-        err_exit "Invalid -p option usage" "$ERR_CODE_INVALID_OPTION"
-      fi
+  -p | --padding)
+    if is_number "$2"; then
+      PADDING_X="$2"
+      PADDING_Y="$2"
     else
-      err_exit "Invalid -p option usage" "$ERR_CODE_INVALID_OPTION"
+      err_exit "--padding option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
     fi
-    break
+    shift
+    shift
     ;;
-  x)
-    if [[ "$1" == "-x" ]]; then
-      if [[ "$#" -lt 2 || "$#" -gt 5 ]]; then
-        err_exit "Invalid -x option usage" "$ERR_CODE_INVALID_OPTION"
-      fi
-      if is_number "$2"; then
-        BOX_PADDING_X="$2"
-      else
-        err_exit "Invalid -x option usage" "$ERR_CODE_INVALID_OPTION"
-      fi
-      if [[ -z "$3" ]]; then
-        BOX_CHAR="#"
-      elif [[ "$3" == "-y" ]]; then
-        if [[ -z "$4" || -n "$6" ]]; then
-          err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
-        else
-          if is_number "$4"; then
-            BOX_PADDING_Y="$4"
-          else
-            err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
-          fi
-          if [[ -n "$5" ]]; then
-            BOX_CHAR="$5"
-          else
-            BOX_CHAR="#"
-          fi
-        fi
-      else
-        if [[ -n "$4" ]]; then
-          err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
-        else
-          BOX_CHAR="$3"
-        fi
-      fi
+  -px | --padding-x)
+    if is_number "$2"; then
+      PADDING_X="$2"
+    else
+      err_exit "--padding-x option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
     fi
-    break
+    shift
+    shift
     ;;
-  y)
-    if [[ "$1" == "-y" ]]; then
-      if [[ "$#" -lt 2 || "$#" -gt 5 ]]; then
-        err_exit "Invalid -y option usage" "$ERR_CODE_INVALID_OPTION"
-      fi
-      if is_number "$2"; then
-        BOX_PADDING_Y="$2"
-      else
-        err_exit "Invalid -y option usage" "$ERR_CODE_INVALID_OPTION"
-      fi
-      if [[ -z "$3" ]]; then
-        BOX_CHAR="#"
-      elif [[ "$3" == "-x" ]]; then
-        if [[ -z "$4" || -n "$6" ]]; then
-          err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
-        else
-          if is_number "$4"; then
-            BOX_PADDING_X="$4"
-          else
-            err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
-          fi
-          if [[ -n "$5" ]]; then
-            BOX_CHAR="$5"
-          else
-            BOX_CHAR="#"
-          fi
-        fi
-      else
-        if [[ -n "$4" ]]; then
-          err_exit "Invalid -x -y option usage" "$ERR_CODE_INVALID_OPTION"
-        else
-          BOX_CHAR="$3"
-        fi
-      fi
+  -py | --padding-y)
+    if is_number "$2"; then
+      PADDING_Y="$2"
+    else
+      err_exit "--padding-y option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
     fi
+    shift
+    shift
+    ;;
+  -m | --margin)
+    if is_number "$2"; then
+      MARGIN_X="$2"
+      MARGIN_Y="$2"
+    else
+      err_exit "--margin option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+    fi
+    shift
+    shift
+    ;;
+  -mx | --margin-x)
+    if is_number "$2"; then
+      MARGIN_X="$2"
+    else
+      err_exit "--margin-x option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+    fi
+    shift
+    shift
+    ;;
+  -my | --margin-y)
+    if is_number "$2"; then
+      MARGIN_Y="$2"
+    else
+      err_exit "--margin-y option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+    fi
+    shift
+    shift
+    ;;
+  -b | --border)
+    if [[ -$(runewidth "$2") -lt 3 ]]; then
+      BOX_CHAR="$2"
+    else
+      err_exit "--border option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+    fi
+    shift
+    shift
+    ;;
+  -* | --*)
+    err_exit "Invalid option" "$ERR_CODE_INVALID_OPTION"
     break
     ;;
   *)
-    err_exit "Invalid option" "$ERR_CODE_INVALID_OPTION"
+    POSITIONAL_ARGS+=("$1")
+    shift
     ;;
   esac
 done
 
+# restore positional parameters
+set -- "${POSITIONAL_ARGS[@]}"
+
+if [[ -z "$1" ]]; then
+  BOX_CHAR="#"
+else
+  BOX_CHAR="$1"
+fi
+
+# fix box char runewidth
 BOX_CHAR_RUNEWIDTH="$(runewidth "$BOX_CHAR")"
 
 # run
@@ -386,6 +392,5 @@ elif ! is_pipe; then
 elif ! is_exists "runewidth"; then
   err_exit "Command not found: runewidth" "$ERR_CODE_NOT_FOUND_RUNEWIDTH"
 else
-  out="$(run_runeboxes "$BOX_CHAR")"
-  echo "$out"
+  wrap_margin "$(run_runeboxes "$BOX_CHAR")"
 fi
