@@ -277,96 +277,96 @@ ERR_CODE_NOT_FOUND_TESTFILE=8
 # flag option cases
 while [[ $# -gt 0 ]]; do
   case $1 in
-  -h | --help)
-    show_help
-    exit_health ""
-    ;;
-  -t | --test)
-    if [ -f "$TEST_FILE" ]; then
-      info "start testing"
-      # shellcheck disable=SC1090
-      . "$TEST_FILE"
-      info "end testing"
-    else
-      err_exit "$TEST_FILE file is not found" "$ERR_CODE_NOT_FOUND_TESTFILE"
-    fi
-    exit_health ""
-    shift
-    shift
-    ;;
-  -p | --padding)
-    if is_number "$2"; then
-      PADDING_X="$2"
-      PADDING_Y="$2"
-    else
-      err_exit "--padding option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
-    fi
-    shift
-    shift
-    ;;
-  -px | --padding-x)
-    if is_number "$2"; then
-      PADDING_X="$2"
-    else
-      err_exit "--padding-x option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
-    fi
-    shift
-    shift
-    ;;
-  -py | --padding-y)
-    if is_number "$2"; then
-      PADDING_Y="$2"
-    else
-      err_exit "--padding-y option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
-    fi
-    shift
-    shift
-    ;;
-  -m | --margin)
-    if is_number "$2"; then
-      MARGIN_X="$2"
-      MARGIN_Y="$2"
-    else
-      err_exit "--margin option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
-    fi
-    shift
-    shift
-    ;;
-  -mx | --margin-x)
-    if is_number "$2"; then
-      MARGIN_X="$2"
-    else
-      err_exit "--margin-x option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
-    fi
-    shift
-    shift
-    ;;
-  -my | --margin-y)
-    if is_number "$2"; then
-      MARGIN_Y="$2"
-    else
-      err_exit "--margin-y option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
-    fi
-    shift
-    shift
-    ;;
-  -b | --border)
-    if [[ -$(runewidth "$2") -lt 3 ]]; then
-      BOX_CHAR="$2"
-    else
-      err_exit "--border option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
-    fi
-    shift
-    shift
-    ;;
-  -* | --*)
-    err_exit "Invalid option" "$ERR_CODE_INVALID_OPTION"
-    break
-    ;;
-  *)
-    POSITIONAL_ARGS+=("$1")
-    shift
-    ;;
+    -h | --help)
+      show_help
+      exit_health ""
+      ;;
+    -t | --test)
+      if [ -f "$TEST_FILE" ]; then
+        info "start testing"
+        # shellcheck disable=SC1090
+        . "$TEST_FILE"
+        info "end testing"
+      else
+        err_exit "$TEST_FILE file is not found" "$ERR_CODE_NOT_FOUND_TESTFILE"
+      fi
+      exit_health ""
+      shift
+      shift
+      ;;
+    -p | --padding)
+      if is_number "$2"; then
+        PADDING_X="$2"
+        PADDING_Y="$2"
+      else
+        err_exit "--padding option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+      fi
+      shift
+      shift
+      ;;
+    -px | --padding-x)
+      if is_number "$2"; then
+        PADDING_X="$2"
+      else
+        err_exit "--padding-x option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+      fi
+      shift
+      shift
+      ;;
+    -py | --padding-y)
+      if is_number "$2"; then
+        PADDING_Y="$2"
+      else
+        err_exit "--padding-y option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+      fi
+      shift
+      shift
+      ;;
+    -m | --margin)
+      if is_number "$2"; then
+        MARGIN_X="$2"
+        MARGIN_Y="$2"
+      else
+        err_exit "--margin option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+      fi
+      shift
+      shift
+      ;;
+    -mx | --margin-x)
+      if is_number "$2"; then
+        MARGIN_X="$2"
+      else
+        err_exit "--margin-x option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+      fi
+      shift
+      shift
+      ;;
+    -my | --margin-y)
+      if is_number "$2"; then
+        MARGIN_Y="$2"
+      else
+        err_exit "--margin-y option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+      fi
+      shift
+      shift
+      ;;
+    -b | --border)
+      if [[ -$(runewidth "$2") -lt 3 ]]; then
+        BOX_CHAR="$2"
+      else
+        err_exit "--border option argument is expected the number" "$ERR_CODE_INVALID_OPTION"
+      fi
+      shift
+      shift
+      ;;
+    -* | --*)
+      err_exit "Invalid option" "$ERR_CODE_INVALID_OPTION"
+      break
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1")
+      shift
+      ;;
   esac
 done
 

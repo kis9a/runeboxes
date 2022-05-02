@@ -1,12 +1,12 @@
 # runeboxes
 
-Display the piped string in the character box. #
+Display the piped string in the character box.
 
-### Image
+## Image
 
 ![runeboxes command image](./runeboxes.png)
 
-### Required
+## Required
 
 runewidth command is required.  
 runewidth "string" is return fixed width of the character "string".
@@ -14,15 +14,14 @@ runewidth "string" is return fixed width of the character "string".
 I use [GitHub - mattn/go-runewidth: wcwidth for golang](https://github.com/mattn/go-runewidth) function as command line tool.  
 See installation at <https://github.com/kis9a/go-runewidth#fork>
 
-### Installation
+## Installation
 
 ```
-install_path=/usr/local/bin/runeboxes
-sudo curl -s https://raw.githubusercontent.com/kis9a/runeboxes/main/runeboxes > "$install_path"
-chmod +x "$install_path"
+sudo curl -s https://raw.githubusercontent.com/kis9a/runeboxes/main/runeboxes >/usr/local/bin/runeboxes
+chmod +x /usr/local/bin/runeboxes
 ```
 
-### Usage
+## Usage
 
 ```
 USAGE:
@@ -44,7 +43,6 @@ EXAMPLE:
   echo bananaあ | runeboxes -p 3 \$
   echo -e "\U1F4A9" | runeboxes -x 8 -y 2 金
   fortune | cowsay -W 60 | runeboxes -x 4 $(echo -e "\U1F4A9")
-EOF
 ```
 
 vim
@@ -53,18 +51,13 @@ vim
 :'<,'>!cat - | runeboxes
 ```
 
-### Inspired
+## Devtools
 
-[GitHub - ascii-boxes/boxes: Command line ASCII boxes unlimited!](https://github.com/ascii-boxes/boxes)
+**Style guide**
 
-### Development
+> Indentation
+> Indent 2 spaces. No tabs. Use blank lines between blocks to improve readability. Indentation is two spaces. Whatever you do, don’t use tabs. For existing files, stay faithful to the existing indentation.
+> <https://google.github.io/styleguide/shellguide.html>
 
-linter: [GitHub - koalaman/shellcheck: ShellCheck, a static analysis tool for shell scripts](https://github.com/koalaman/shellcheck)  
-formatter: [GitHub - mvdan/sh: A shell parser, formatter, and interpreter with bash support; includes shfmt](https://github.com/mvdan/sh)
-
-### Testing
-
-```bash
-git clone https://github.com/kis9a/runeboxes
-cd runeboxes ./runeboxes -t
-```
+Linter: [GitHub - koalaman/shellcheck](https://github.com/koalaman/shellcheck)  
+Formatter: [GitHub - mvdan/sh](https://github.com/mvdan/sh)
